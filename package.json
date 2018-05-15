@@ -1,0 +1,25 @@
+{
+    "name": "binary-server",
+    "version": "0.1.0",
+    "description": "binary server",
+    "main": "app.js",
+    "dependencies": {
+        "fs-promise": "^2.0.3",
+        "koa": "^2.5.1",
+        "koa-body": "^2.5.0",
+        "koa-logger": "^3.2.0",
+        "koa-router": "^7.4.0",
+        "mongoose": "^5.0.17"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "test",
+        "start": "node app.js"
+    },
+    "keywords": [
+        "binary",
+        "server"
+    ],
+    "author": "tripleCC",
+    "license": "MIT"
+}
