@@ -1,4 +1,5 @@
 const fs = require('fs-promise')
+const rimraf = require('rimraf')
 const path = require('path')
 
 function mkdirp(dirname) {
@@ -22,14 +23,31 @@ function mkdirp(dirname) {
     })
 }
 
-function binaryDir(name, version) {
+function rmdir(dirname) {
+    return new Promise((resolve, reject) => {
+        rimraf(dirname, (err) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(resolve)
+            }
+        })
+    })
+}
+
+function binaryRoot() {
     const rootDir = path.dirname(require.main.filename)
-    const binaryRoot = path.join(rootDir, '.binary-server')
-    const binaryDir = path.join(binaryRoot, name, version)
-    return binaryDir
+    const binaryRoot = path.join(rootDir, '.binary')
+    return binaryRoot
+}
+
+function binaryDir(name, version) {
+    return path.join(binaryRoot(), name, version)
 }
 
 module.exports = {
     mkdirp,
+    rmdir,
+    binaryRoot,
     binaryDir
 }

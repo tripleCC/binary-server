@@ -5,9 +5,12 @@ require('../models/component')
 const dir = require('../utils/dir')
 const path = require('path')
 const fs = require('fs')
+const fsp = require('fs-promise')
 const os = require('os')
 const util = require('util')
 const koaBody = require('koa-body')
+
+// /usr/local/var/mongodb
 const mongoose = require('mongoose'),
     Component = mongoose.model('Component')
 
@@ -43,10 +46,6 @@ async function show(ctx) {
 
 async function create(ctx) {
 
-    if ('POST' != ctx.method) {
-        return await next()
-    }
-
     const name = ctx.request.body.fields.name
     const version = ctx.request.body.fields.version
 
@@ -57,8 +56,10 @@ async function create(ctx) {
 
     const file = ctx.request.body.files.file
 
-    const old = await Component.where({ name: name, version: version }).findOne().exec()
-    if (old) {
+    let component = await Component.where({ name: name, version: version }).findOne().exec()
+        // let oldFiles = await fsp.readdir(binaryDir)
+        // oldFiles = oldFiles.filter((name) => { return name == file.name })
+    if (component) {
         ctx.body = util.format('二进制文件已经存在 %s (%s)', name, version)
         return
     }
@@ -68,7 +69,7 @@ async function create(ctx) {
     const writer = fs.createWriteStream(filePath)
     reader.pipe(writer)
 
-    let component = new Component
+    component = new Component
     component.name = name
     component.version = version
     try {
@@ -83,7 +84,30 @@ async function create(ctx) {
 }
 
 async function destroy(ctx) {
-    ctx.body = ctx.params
+    const name = ctx.params.name
+    const version = ctx.params.version
+
+    const component = await Component.where({ name: name, version: version }).findOne().exec()
+    if (!component) {
+        ctx.body = util.format('无二进制文件 %s (%s)', name, version)
+        return
+    }
+
+    const binaryDir = path.join(dir.binaryRoot(), name)
+    if (fs.existsSync(binaryDir)) {
+        await dir.rmdir(binaryDir)
+    }
+
+    try {
+        await component.remove().exec()
+            // await Component.remove({ name: name, version: version })
+    } catch (error) {
+        console.log(error)
+        ctx.body = error.message
+        return
+    }
+
+    ctx.body = util.format('删除成功 %s (%s)', name, version)
 }
 
 async function download(ctx) {

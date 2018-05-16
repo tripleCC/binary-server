@@ -9,7 +9,8 @@
         "koa-body": "^2.5.0",
         "koa-logger": "^3.2.0",
         "koa-router": "^7.4.0",
-        "mongoose": "^5.0.17"
+        "mongoose": "^5.0.17",
+        "rimraf": "^2.6.2"
     },
     "devDependencies": {},
     "scripts": {
