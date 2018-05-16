@@ -16,36 +16,25 @@ const mongoose = require('mongoose'),
 
 
 async function show(ctx) {
-
-    let name = ctx.params.name
-    let version = ctx.params.version
-
-    let result = await Component
-        .findOne()
-        .where('name').equals(ctx.params.name)
-        .where('version').equals(ctx.params.version)
-        .exec()
-    console.log(result)
-
-    let component = new Component()
-    component.name = ctx.params.name
-    component.version = ctx.params.version
-    component.create_at = Date.now
-    component.save((err) => {
-        console.log(err)
-    })
+    const name = ctx.params.name
+    const version = ctx.params.version
+    let conditions = {}
 
     if (name && version) {
-        console.log('get one')
-
-    } else {
-        console.log('get all')
+        conditions = { name: name, version: version }
     }
-    // ctx.body = ctx.params
+
+    let names = ctx.params.names
+    if (names) {
+        names = names.split(',')
+        conditions = { name: { $in: names } }
+    }
+
+    const components = await Component.find(conditions).exec()
+    ctx.body = JSON.stringify(components)
 }
 
 async function create(ctx) {
-
     const name = ctx.request.body.fields.name
     const version = ctx.request.body.fields.version
 
