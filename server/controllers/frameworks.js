@@ -31,7 +31,15 @@ async function show(ctx) {
     }
 
     const components = await Component.find(conditions).exec()
-    ctx.body = JSON.stringify(components)
+
+    let body = {}
+    for (const i in components) {
+        let name = components[i].name
+        body[name] = body[name] || []
+        body[name].push(components[i].version)
+    }
+
+    ctx.body = body
 }
 
 async function create(ctx) {

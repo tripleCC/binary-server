@@ -6,7 +6,7 @@ const Schema = mongoose.Schema
 const ComponentSchema = new Schema({
     name: String,
     version: String,
-    commit: String,
+    annotate: String,
     sha: String,
     create_at: {
         type: Date,
