@@ -89,6 +89,7 @@ async function destroy(ctx) {
 
     const component = await Component.where({ name: name, version: version }).findOne().exec()
     if (!component) {
+        ctx.status = 404
         ctx.body = util.format('无二进制文件 %s (%s)', name, version)
         return
     }
@@ -99,8 +100,7 @@ async function destroy(ctx) {
     }
 
     try {
-        await component.remove().exec()
-            // await Component.remove({ name: name, version: version })
+        await Component.remove({ name: name, version: version })
     } catch (error) {
         console.log(error)
         ctx.body = error.message
@@ -111,8 +111,29 @@ async function destroy(ctx) {
 }
 
 async function download(ctx) {
-    console.log(ctx.params)
-    ctx.body = ctx.params
+    const name = ctx.params.name
+    const version = ctx.params.version
+
+    const component = await Component.where({ name: name, version: version }).findOne().exec()
+
+    if (!component) {
+        ctx.status = 404
+        ctx.body = util.format('无二进制文件 %s (%s)', name, version)
+        return
+    }
+
+    const binaryDir = dir.binaryDir(name, version)
+    const binaryFiles = await fsp.readdir(binaryDir)
+    const binaryFile = binaryFiles.shift()
+    if (!binaryFile) {
+        ctx.status = 404
+        ctx.body = util.format('无二进制文件 %s (%s)', name, version)
+        return
+    }
+
+    const binaryPath = path.join(binaryDir, binaryFile)
+    ctx.type = path.extname(binaryPath)
+    ctx.body = fs.createReadStream(binaryPath)
 }
 
 module.exports = {
