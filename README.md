@@ -19,7 +19,7 @@
 .get('/frameworks/:names', frameworks.show)
 .get('/frameworks/:name/:version', frameworks.show)
 .del('/frameworks/:name/:version', frameworks.destroy)
-.get('/frameworks/:name/:version/.zip', frameworks.download)
+.get('/frameworks/:name/:version', frameworks.download)
 .post('/frameworks', frameworks.create)
 ```
 
@@ -45,10 +45,12 @@ curl http://localhost:8080/frameworks -F "name=PodA" -F "version=0.2.4" -F
 > 保存成功 PodA (0.2.4)
 ```
 
+zip 包存储在 server 根目录的 `.binary` 目录下
+
 获取组件 zip 包：
 
 ```
-curl http://localhost:8080/frameworks/PodA/0.2.4/.zip > PodA.framework.zip
+curl http://localhost:8080/frameworks/PodA/0.2.4 > PodA.framework.zip
 ```
 
 删除组件：
