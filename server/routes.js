@@ -7,7 +7,7 @@ router
     .get('/frameworks/:names', frameworks.show)
     .get('/frameworks/:name/:version', frameworks.show)
     .del('/frameworks/:name/:version', frameworks.destroy)
-    .get('/frameworks/:name/:version', frameworks.download)
+    .get('/frameworks/:name/:version/zip', frameworks.download)
     .post('/frameworks', frameworks.create)
 
 module.exports = router
