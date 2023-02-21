@@ -123,8 +123,8 @@ async function download(ctx) {
     const binaryFiles = await fsp.readdir(binaryDir)
     const binaryFile = binaryFiles.filter(function (one) {
         return path.extname(one) == ".zip"
-    })
-    
+    }).shift()
+
     if (!binaryFile) {
         ctx.status = 404
         ctx.body = util.format('无二进制文件 %s (%s)', name, version)
