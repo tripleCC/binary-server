@@ -91,7 +91,7 @@ async function destroy(ctx) {
         return
     }
 
-    const binaryDir = path.join(dir.binaryRoot(), name)
+    const binaryDir = dir.binaryDir(name, version)
     if (fs.existsSync(binaryDir)) {
         await dir.rmdir(binaryDir)
     }
@@ -121,7 +121,10 @@ async function download(ctx) {
 
     const binaryDir = dir.binaryDir(name, version)
     const binaryFiles = await fsp.readdir(binaryDir)
-    const binaryFile = binaryFiles.shift()
+    const binaryFile = binaryFiles.filter(function (one) {
+        return path.extname(one) == ".zip"
+    })
+    
     if (!binaryFile) {
         ctx.status = 404
         ctx.body = util.format('无二进制文件 %s (%s)', name, version)
